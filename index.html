@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Frequency Oasis — Certified Sound Engine</title>
+<meta name="description" content="Not followers. Frequencies. A certified sound engine that generates a world of music for you.">
+
+<!-- Favicons (desktop browsers / browser tabs) -->
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icon-16.png">
+
+<!-- iOS home screen -->
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<meta name="apple-mobile-web-app-title" content="Frequency Oasis">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<!-- Android / PWA -->
+<link rel="manifest" href="site.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#050505">
+
+<!-- Social preview -->
+<meta property="og:title" content="Frequency Oasis — Certified Sound Engine">
+<meta property="og:description" content="Not followers. Frequencies.">
+<meta property="og:image" content="icon-512.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Frequency Oasis — Certified Sound Engine">
+<meta name="twitter:description" content="Not followers. Frequencies.">
+<meta name="twitter:image" content="icon-512.png">
+
+<style>
+  :root{
+    --bg:#050505;
+    --gold:#D4AF37;
+    --gold-bright:#FFD966;
+    --ink:#F0EDE6;
+    --ink-dim:#8a8580;
+    --panel-line:#231c26;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#000;}
+  body{
+    color:var(--ink);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  #globeStage{position:fixed;inset:0;width:100vw;height:100vh;display:block;cursor:grab;touch-action:none;}
+  #globeStage:active{cursor:grabbing;}
+
+  .overlay-top{
+    position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;
+    padding:20px 22px;pointer-events:none;z-index:5;
+  }
+  .brand{display:flex;flex-direction:column;gap:2px;}
+  .brand .mark{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;letter-spacing:0.02em;text-shadow:0 2px 12px #000;}
+  .brand .mark span{color:var(--gold);}
+  .brand .tagline{font-size:10px;letter-spacing:0.16em;color:var(--ink-dim);text-transform:uppercase;}
+  .seal{
+    border:1px solid var(--gold);border-radius:999px;
+    padding:5px 12px;font-size:10px;letter-spacing:0.1em;color:var(--gold);
+    text-transform:uppercase;white-space:nowrap;background:rgba(5,5,5,0.4);
+  }
+
+  .odometer{
+    position:fixed;top:20px;left:50%;transform:translateX(-50%);
+    font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:0.04em;color:var(--gold-bright);
+    background:rgba(5,5,5,0.5);border:1px solid rgba(212,175,55,0.35);border-radius:999px;padding:6px 14px;
+    pointer-events:none;z-index:5;white-space:nowrap;
+  }
+  .odometer b{color:var(--ink);font-weight:600;}
+
+  .emotion-badge{
+    position:fixed;top:58px;left:50%;transform:translateX(-50%);
+    text-align:center;pointer-events:none;z-index:5;
+  }
+  .emotion-badge .word{
+    font-family:Georgia,'Times New Roman',serif;
+    font-size:28px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;
+    color:var(--gold-bright);text-shadow:0 2px 20px rgba(212,175,55,0.4);
+    transition:color .3s ease, text-shadow .3s ease;
+  }
+  .emotion-badge .sub{
+    margin-top:5px;font-family:'Space Grotesk',sans-serif;font-size:11px;letter-spacing:0.1em;
+    color:var(--ink-dim);text-transform:uppercase;
+  }
+
+  .hint{
+    position:fixed;bottom:104px;left:50%;transform:translateX(-50%);
+    font-family:'Space Grotesk',sans-serif;font-size:10.5px;color:var(--ink-dim);
+    background:rgba(5,5,5,0.5);border:1px solid var(--panel-line);border-radius:999px;padding:6px 14px;
+    pointer-events:none;z-index:5;white-space:nowrap;
+  }
+
+  .profile-select{
+    position:fixed;top:64px;right:20px;display:flex;flex-direction:column;gap:6px;z-index:5;align-items:flex-end;
+  }
+  .chip{
+    font-family:'Space Grotesk',sans-serif;
+    border:1px solid var(--panel-line);background:rgba(5,5,5,0.5);color:var(--ink-dim);
+    padding:6px 12px;border-radius:999px;font-size:11.5px;cursor:pointer;transition:all .15s ease;
+    display:inline-flex;align-items:center;
+  }
+  .chip .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:middle;flex-shrink:0;}
+  .chip.active{border-color:var(--gold);color:var(--gold-bright);background:rgba(212,175,55,0.1);}
+  .chip:hover{color:var(--ink);}
+
+  .transport-bar{
+    position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    display:flex;gap:10px;align-items:center;z-index:6;
+  }
+  button.btn{
+    font-family:'Space Grotesk',sans-serif;
+    background:rgba(15,12,18,0.7);border:1px solid var(--panel-line);color:var(--ink);
+    padding:11px 18px;border-radius:999px;font-size:13px;cursor:pointer;transition:all .15s ease;
+    backdrop-filter:blur(6px);
+  }
+  button.btn:hover{border-color:var(--gold);color:var(--gold-bright);}
+  button.btn.primary{
+    background:linear-gradient(180deg, #e6c65c, var(--gold));color:#0d0a05;font-weight:600;border:none;
+  }
+  button.btn.primary:hover{filter:brightness(1.08);}
+  button.btn.round{padding:11px 16px;}
+  button.btn.evolve{border-color:rgba(212,175,55,0.5);}
+
+  .info-strip{
+    position:fixed;bottom:60px;left:50%;transform:translateX(-50%);
+    font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--ink-dim);
+    text-align:center;pointer-events:none;z-index:5;white-space:nowrap;
+  }
+  .info-strip b{color:var(--gold-bright);}
+
+  .export-menu{
+    position:fixed;bottom:20px;right:20px;z-index:6;display:flex;flex-direction:column;gap:8px;align-items:flex-end;
+  }
+  .export-panel{
+    display:none;flex-direction:column;gap:6px;background:rgba(10,8,12,0.85);border:1px solid var(--panel-line);
+    border-radius:12px;padding:10px;backdrop-filter:blur(6px);
+  }
+  .export-panel.open{display:flex;}
+  .export-panel button{font-size:12px;padding:8px 14px;}
+
+  .seed-row{
+    position:fixed;bottom:56px;left:20px;z-index:6;display:flex;flex-direction:column;gap:6px;align-items:flex-start;
+  }
+  .seed-input-wrap{display:flex;gap:6px;}
+  .seed-input-wrap input{
+    font-family:'Space Grotesk',sans-serif;font-size:11px;width:130px;
+    background:rgba(5,5,5,0.5);border:1px solid var(--panel-line);color:var(--ink);
+    border-radius:999px;padding:8px 12px;outline:none;
+  }
+  .seed-input-wrap input:focus{border-color:var(--gold);}
+  .seed-input-wrap button{font-size:11px;padding:8px 12px;}
+
+  .cta-corner{
+    position:fixed;bottom:20px;left:20px;z-index:6;
+    font-family:'Space Grotesk',sans-serif;font-size:11px;
+  }
+  .cta-corner a{color:var(--gold-bright);text-decoration:none;border-bottom:1px solid rgba(255,217,102,0.4);}
+  .cta-corner a:hover{border-color:var(--gold-bright);}
+
+  @media (max-width:560px){
+    .profile-select{flex-direction:row;flex-wrap:wrap;justify-content:flex-end;top:auto;bottom:150px;right:10px;left:10px;transform:none;}
+    .cta-corner{left:50%;transform:translateX(-50%);bottom:196px;}
+    .seed-row{left:50%;transform:translateX(-50%);bottom:222px;align-items:center;}
+    .export-menu{right:20px;bottom:150px;}
+    .emotion-badge{top:52px;}
+    .emotion-badge .word{font-size:21px;}
+  }
+  @media (prefers-reduced-motion: reduce){ * { transition:none !important; } }
+</style>
+</head>
+<body>
+
+<canvas id="globeStage"></canvas>
+
+<div class="overlay-top">
+  <div class="brand">
+    <div class="mark">FREQUENCY <span>OASIS</span></div>
+    <div class="tagline">Not followers. Frequencies.</div>
+  </div>
+  <div class="seal">Certified Sound Engine</div>
+</div>
+
+<div class="odometer" id="odometer">Discovery <b>1</b> · Seed <b>0</b> of <b>4,294,967,296</b> possible worlds</div>
+
+<div class="emotion-badge">
+  <div class="word" id="emotionWord">—</div>
+  <div class="sub" id="emotionSub">—</div>
+</div>
+
+<div class="profile-select" id="genreSelect"></div>
+
+<div class="hint">Drag to explore · Tap the globe to discover · Evolve to reshape it</div>
+<div class="info-strip" id="transportInfo"></div>
+
+<div class="seed-row">
+  <div class="seed-input-wrap">
+    <input type="text" id="seedInput" inputmode="numeric" placeholder="seed number" />
+    <button class="btn round" id="btnLoadSeed">Load</button>
+  </div>
+</div>
+
+<div class="transport-bar">
+  <button class="btn round" id="btnPrev">‹ Prev</button>
+  <button class="btn primary" id="btnPlay">Play</button>
+  <button class="btn evolve" id="btnEvolve">Evolve</button>
+  <button class="btn round" id="btnNext">Next ›</button>
+</div>
+
+<div class="export-menu">
+  <div class="export-panel" id="exportPanel">
+    <button class="btn" id="btnExportWav">Export WAV (Full Mix)</button>
+    <button class="btn" id="btnExportStems">Export Stems (3 files)</button>
+    <button class="btn" id="btnExportMidi">Export MIDI</button>
+    <button class="btn" id="btnExportSeed">Export Seed (.json)</button>
+  </div>
+  <button class="btn round" id="btnExportToggle">Export ▾</button>
+</div>
+
+<div class="cta-corner">Export stems → <a href="https://frequencyoasis.gumroad.com/l/ifzft?layout=profile" target="_blank" rel="noopener">get the VST</a></div>
+
+<script>
+// ============================================================
+// FREQUENCY OASIS — CERTIFIED SOUND ENGINE v2
+// Seeded, emotion-driven, six-world procedural music engine.
+// Procedural chords / melody / bass. No samples. No drums.
+// Every idea is reproducible from its seed. Evolve preserves
+// harmony + genre + emotion + tempo while regenerating melody
+// and bass around the same musical seed of an idea.
+// ============================================================
+
+// ---------- Seeded RNG ----------
+function mulberry32(seed){
+  let a = seed >>> 0;
+  return function(){
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function randomSeed(){ return Math.floor(Math.random()*4294967296) >>> 0; }
+function randRange(rng,min,max){ return min + rng()*(max-min); }
+function randInt(rng,min,max){ return Math.floor(randRange(rng,min,max+1)); }
+function pick(rng,arr){ return arr[Math.floor(rng()*arr.length)]; }
+function humanizeTime(rng,t){ return t + (rng()*0.014 - 0.007); }
+function humanizeVel(rng,v){ return Math.max(0.05, Math.min(1, v + (rng()*0.18 - 0.09))); }
+
+// ---------- Music theory ----------
+const SCALES = {
+  major:          [0,2,4,5,7,9,11],
+  minor:          [0,2,3,5,7,8,10],
+  dorian:         [0,2,3,5,7,9,10],
+  mixolydian:     [0,2,4,5,7,9,10],
+  phrygian:       [0,1,3,5,7,8,10],
+  lydian:         [0,2,4,6,7,9,11],
+  harmonicMinor:  [0,2,3,5,7,8,11],
+  melodicMinor:   [0,2,3,5,7,9,11],
+};
+
+function midiToFreq(m){ return 440 * Math.pow(2, (m-69)/12); }
+
+function scaleDegreeToSemitone(scaleArr, degreeIndex){
+  const octave = Math.floor(degreeIndex/7);
+  const idx = ((degreeIndex % 7) + 7) % 7;
+  return scaleArr[idx] + 12*octave;
+}
+
+function chordFromDegree(rootMidi, scaleArr, degree, size){
+  size = size || 4;
+  const tones = [];
+  for(let i=0;i<size;i++) tones.push(degree + i*2);
+  return tones.map(t => rootMidi + scaleDegreeToSemitone(scaleArr, t));
+}
+
+function voiceLead(newChord, prevChord){
+  if(!prevChord) return newChord.slice();
+  return newChord.map((n,i)=>{
+    let note = n;
+    const target = prevChord[i] !== undefined ? prevChord[i] : prevChord[0];
+    while(note - target > 6) note -= 12;
+    while(target - note > 6) note += 12;
+    return note;
+  });
+}
+
+function generateProgression(rootMidi, scaleArr, degrees, chordSize){
+  let prev = null;
+  return degrees.map(deg => {
+    const chord = chordFromDegree(rootMidi, scaleArr, deg, chordSize);
+    const voiced = voiceLead(chord, prev);
+    prev = voiced;
+    return { degree: deg, notes: voiced };
+  });
+}
+
+// ---------- Emotional Intelligence ----------
+// Every idea carries exactly one dominant emotion. Its modifiers shape
+// density, dynamics, note length, rest/phrase-breathing, swing, tempo
+// bias, how often the melodic motif varies, and filter brightness.
+const EMOTIONS = {
+  love:          { label:'Love',          densityMul:1.05, velBase:0.60, velRange:0.16, noteLenMul:1.25, restProb:0.10, swingMul:1.00, tempoBias:0,  motifVaryProb:0.25, filterMul:1.00 },
+  nostalgia:     { label:'Nostalgia',     densityMul:0.90, velBase:0.55, velRange:0.18, noteLenMul:1.30, restProb:0.15, swingMul:1.05, tempoBias:-4, motifVaryProb:0.30, filterMul:0.85 },
+  longing:       { label:'Longing',       densityMul:0.80, velBase:0.50, velRange:0.20, noteLenMul:1.50, restProb:0.20, swingMul:1.05, tempoBias:-6, motifVaryProb:0.20, filterMul:0.80 },
+  peace:         { label:'Peace',         densityMul:0.75, velBase:0.45, velRange:0.12, noteLenMul:1.60, restProb:0.18, swingMul:0.95, tempoBias:-5, motifVaryProb:0.15, filterMul:0.75 },
+  hope:          { label:'Hope',          densityMul:1.00, velBase:0.60, velRange:0.15, noteLenMul:1.10, restProb:0.10, swingMul:1.00, tempoBias:3,  motifVaryProb:0.30, filterMul:1.05 },
+  joy:           { label:'Joy',           densityMul:1.20, velBase:0.68, velRange:0.18, noteLenMul:0.90, restProb:0.06, swingMul:0.95, tempoBias:6,  motifVaryProb:0.40, filterMul:1.20 },
+  confidence:    { label:'Confidence',    densityMul:1.10, velBase:0.65, velRange:0.14, noteLenMul:1.00, restProb:0.08, swingMul:0.90, tempoBias:4,  motifVaryProb:0.35, filterMul:1.10 },
+  reflection:    { label:'Reflection',    densityMul:0.70, velBase:0.50, velRange:0.16, noteLenMul:1.40, restProb:0.20, swingMul:1.10, tempoBias:-5, motifVaryProb:0.20, filterMul:0.85 },
+  healing:       { label:'Healing',       densityMul:0.80, velBase:0.50, velRange:0.14, noteLenMul:1.40, restProb:0.16, swingMul:1.00, tempoBias:-3, motifVaryProb:0.20, filterMul:0.90 },
+  mystery:       { label:'Mystery',       densityMul:0.85, velBase:0.48, velRange:0.20, noteLenMul:1.20, restProb:0.22, swingMul:0.90, tempoBias:-2, motifVaryProb:0.30, filterMul:0.80 },
+  curiosity:     { label:'Curiosity',     densityMul:1.05, velBase:0.55, velRange:0.18, noteLenMul:1.00, restProb:0.12, swingMul:1.00, tempoBias:2,  motifVaryProb:0.45, filterMul:1.05 },
+  freedom:       { label:'Freedom',       densityMul:1.10, velBase:0.62, velRange:0.18, noteLenMul:1.10, restProb:0.10, swingMul:0.95, tempoBias:5,  motifVaryProb:0.35, filterMul:1.10 },
+  warmth:        { label:'Warmth',        densityMul:0.90, velBase:0.55, velRange:0.14, noteLenMul:1.30, restProb:0.12, swingMul:1.05, tempoBias:-2, motifVaryProb:0.20, filterMul:0.95 },
+  faith:         { label:'Faith',         densityMul:0.80, velBase:0.52, velRange:0.13, noteLenMul:1.35, restProb:0.14, swingMul:1.00, tempoBias:-1, motifVaryProb:0.20, filterMul:0.90 },
+  celebration:   { label:'Celebration',   densityMul:1.25, velBase:0.70, velRange:0.16, noteLenMul:0.85, restProb:0.05, swingMul:0.92, tempoBias:8,  motifVaryProb:0.40, filterMul:1.25 },
+  solitude:      { label:'Solitude',      densityMul:0.65, velBase:0.45, velRange:0.15, noteLenMul:1.55, restProb:0.25, swingMul:1.00, tempoBias:-6, motifVaryProb:0.15, filterMul:0.78 },
+  determination: { label:'Determination', densityMul:1.05, velBase:0.62, velRange:0.12, noteLenMul:1.00, restProb:0.08, swingMul:0.88, tempoBias:3,  motifVaryProb:0.30, filterMul:1.05 },
+  melancholy:    { label:'Melancholy',    densityMul:0.70, velBase:0.48, velRange:0.17, noteLenMul:1.45, restProb:0.20, swingMul:1.05, tempoBias:-5, motifVaryProb:0.20, filterMul:0.80 },
+  wonder:        { label:'Wonder',        densityMul:0.95, velBase:0.55, velRange:0.20, noteLenMul:1.20, restProb:0.15, swingMul:1.00, tempoBias:0,  motifVaryProb:0.35, filterMul:1.00 },
+};
+
+// ---------- Six Certified Worlds ----------
+const GENRES = {
+  'rare-rnb': {
+    label:'Rare R&B', tagline:'Late-night. Intimate. Vulnerable.',
+    moods:['love','longing','warmth','healing','solitude'],
+    rootRange:[38,46], scales:['dorian','minor','major'],
+    chordSizeRange:[4,5],
+    progressions:[[0,5,3,4],[0,3,6,4],[1,4,0,5],[0,4,1,5,3,6]],
+    tempoRange:[62,86], swingRange:[0.10,0.18],
+    bassStyle:'sustained-root-fifth',
+    octaves:{ chord:12, bass:-12, lead:12 },
+    timbre:{ padType:'sine-tri-mix', padCutoff:1000, leadType:'sine', leadCutoff:1800, leadVibrato:4.2, bassType:'sine-sub', bassCutoff:600 },
+    visual:{ accent:'#E8A9A0', accent2:'#B76E79', glow:0.50, pulseSpeed:0.90, bg:'#0a0506' },
+  },
+  'neo-soul': {
+    label:'Neo Soul', tagline:'Organic. Honest. Spiritual.',
+    moods:['reflection','faith','warmth','healing','wonder'],
+    rootRange:[40,48], scales:['dorian','mixolydian','major'],
+    chordSizeRange:[4,5],
+    progressions:[[0,3,4,1],[0,5,1,4],[1,4,0,0],[0,2,5,1,4]],
+    tempoRange:[70,96], swingRange:[0.12,0.22],
+    bassStyle:'walking-lite',
+    octaves:{ chord:12, bass:-12, lead:12 },
+    timbre:{ padType:'rhodes', padCutoff:1500, leadType:'rhodes-lead', leadCutoff:2200, leadVibrato:3.5, bassType:'triangle-sub', bassCutoff:700 },
+    visual:{ accent:'#C98A3B', accent2:'#6B7A4F', glow:0.55, pulseSpeed:1.00, bg:'#080604' },
+  },
+  'emotional-trap': {
+    label:'Emotional Trap', tagline:'Lonely. Cinematic. Hopeful.',
+    moods:['melancholy','determination','mystery','hope','solitude'],
+    rootRange:[36,44], scales:['minor','phrygian','harmonicMinor'],
+    chordSizeRange:[3,4],
+    progressions:[[0,5,3,4],[0,6,3,4],[0,3,4,4]],
+    tempoRange:[64,96], swingRange:[0.04,0.10],
+    bassStyle:'sparse-sub',
+    octaves:{ chord:12, bass:-12, lead:12 },
+    timbre:{ padType:'bell-pad', padCutoff:1100, leadType:'bell', leadCutoff:3000, leadVibrato:0, bassType:'sine-sub-deep', bassCutoff:380 },
+    visual:{ accent:'#6C63FF', accent2:'#2A2550', glow:0.70, pulseSpeed:0.70, bg:'#05040a' },
+  },
+  'hip-hop': {
+    label:'Hip Hop', tagline:'Soul. Grit. Timeless.',
+    moods:['determination','nostalgia','confidence','freedom','reflection'],
+    rootRange:[38,46], scales:['dorian','minor','mixolydian'],
+    chordSizeRange:[3,4],
+    progressions:[[0,3,4,4],[0,5,3,4],[1,4,0,4]],
+    tempoRange:[78,98], swingRange:[0.14,0.24],
+    bassStyle:'vinyl-groove',
+    octaves:{ chord:12, bass:-12, lead:12 },
+    timbre:{ padType:'warm-keys', padCutoff:1200, leadType:'jazzy-piano', leadCutoff:2000, leadVibrato:0, bassType:'triangle-punchy', bassCutoff:750 },
+    visual:{ accent:'#C9A227', accent2:'#8B5E34', glow:0.50, pulseSpeed:1.00, bg:'#0a0805' },
+  },
+  'modern-pop': {
+    label:'Modern Pop', tagline:'Uplifting. Dreamy. Bright.',
+    moods:['joy','hope','celebration','wonder','love'],
+    rootRange:[48,55], scales:['major','lydian'],
+    chordSizeRange:[3,4],
+    progressions:[[0,4,5,3],[0,3,4,4],[5,3,0,4]],
+    tempoRange:[92,120], swingRange:[0.00,0.06],
+    bassStyle:'driving-pulse',
+    octaves:{ chord:12, bass:-12, lead:24 },
+    timbre:{ padType:'supersaw', padCutoff:2600, leadType:'bright-lead', leadCutoff:3400, leadVibrato:5.0, bassType:'triangle-tight', bassCutoff:900 },
+    visual:{ accent:'#4DE8D8', accent2:'#FF5FA2', glow:0.65, pulseSpeed:1.30, bg:'#050608' },
+  },
+  'jazzy': {
+    label:'Jazzy', tagline:'Sophisticated. Smooth. Alive.',
+    moods:['confidence','curiosity','wonder','reflection','joy'],
+    rootRange:[42,50], scales:['dorian','melodicMinor','major','mixolydian'],
+    chordSizeRange:[4,5],
+    progressions:[[1,4,0,0],[0,5,1,4],[2,5,1,4],[0,3,6,2,5,1,4]],
+    tempoRange:[74,104], swingRange:[0.18,0.28],
+    bassStyle:'walking',
+    octaves:{ chord:12, bass:-12, lead:12 },
+    timbre:{ padType:'jazz-keys', padCutoff:1400, leadType:'sax-ish', leadCutoff:2100, leadVibrato:4.8, bassType:'upright-ish', bassCutoff:650 },
+    visual:{ accent:'#D4AF37', accent2:'#1A2A4A', glow:0.55, pulseSpeed:0.95, bg:'#04050a' },
+  },
+};
+
+// ---------- Motif-based melody (replaces pure per-step randomness) ----------
+function generateMotif(rng, emotion){
+  const len = randInt(rng,3,6);
+  const cell = [];
+  let deg = 0;
+  const usedSteps = new Set();
+  for(let i=0;i<len;i++){
+    let step = randInt(rng,0,7), guard=0;
+    while(usedSteps.has(step) && guard<8){ step=(step+1)%8; guard++; }
+    usedSteps.add(step);
+    if(i>0){ const move = pick(rng,[-2,-1,-1,0,1,1,2]); deg += move; }
+    cell.push({ step, deg, longer: rng() < Math.min(0.55, 0.22*emotion.noteLenMul) });
+  }
+  cell.sort((a,b)=>a.step-b.step);
+  return cell;
+}
+
+function varyMotif(rng, motif, emotion){
+  return motif.map(n=>{
+    const c = { step:n.step, deg:n.deg, longer:n.longer };
+    if(rng() < 0.40) c.deg += pick(rng,[-1,0,0,1]);
+    if(rng() < 0.25) c.step = Math.max(0, Math.min(7, c.step + pick(rng,[-1,1])));
+    if(rng() < 0.20) c.longer = !c.longer;
+    return c;
+  });
+}
+
+function generateMelodyFromMotif(rng, motif, genre, emotion, scaleArr, rootMidi, progression, barDur, swing){
+  const events = [];
+  const stepsPerBar = 8;
+  const stepDur = barDur/stepsPerBar;
+  const leadOct = genre.octaves.lead;
+  let activeMotif = motif;
+  progression.forEach((chord, barIdx)=>{
+    if(rng() < emotion.restProb*0.6) return; // phrase breathing: whole-bar rest
+    if(rng() < emotion.motifVaryProb) activeMotif = varyMotif(rng, activeMotif, emotion);
+    const density = Math.min(1, 0.55*emotion.densityMul);
+    activeMotif.forEach(note=>{
+      if(rng() > density) return;
+      let start = barIdx*barDur + note.step*stepDur;
+      if(note.step % 2 === 1) start += swing*stepDur;
+      const degreeIndex = chord.degree + note.deg;
+      const pitch = rootMidi + scaleDegreeToSemitone(scaleArr, degreeIndex) + leadOct;
+      const dur = stepDur * (note.longer ? 1.8*emotion.noteLenMul : 0.9*emotion.noteLenMul);
+      const vel = Math.max(0.05, Math.min(1, emotion.velBase + (rng()*2-1)*emotion.velRange));
+      events.push({ time: humanizeTime(rng,start), freq: midiToFreq(pitch), dur, vel: humanizeVel(rng,vel) });
+    });
+  });
+  return events;
+}
+
+// ---------- Genre-specific bass patterns ----------
+function generateBass(rng, genre, emotion, progression, barDur, swing, rootMidi){
+  const events = [];
+  const bassOct = genre.octaves.bass;
+  const beatDur = barDur/4;
+  const baseVel = Math.min(1, 0.72*(emotion.densityMul*0.6+0.4));
+  progression.forEach((chord, barIdx)=>{
+    const root = chord.notes[0] + bassOct;
+    const third = chord.notes[1]!==undefined ? chord.notes[1]+bassOct : root+4;
+    const fifth = chord.notes[2]!==undefined ? chord.notes[2]+bassOct : root+7;
+    const t0 = barIdx*barDur;
+    function addNote(beatPos, pitch, lenBeats, vel){
+      let start = t0 + beatPos*beatDur;
+      if(Math.round(beatPos*2)%2===1) start += swing*beatDur;
+      events.push({ time:humanizeTime(rng,start), freq:midiToFreq(pitch), dur:beatDur*lenBeats, vel:humanizeVel(rng,vel) });
+    }
+    switch(genre.bassStyle){
+      case 'sustained-root-fifth':
+        addNote(0, root, 1.9, baseVel);
+        if(rng()<0.5) addNote(2, fifth, 1.8, baseVel*0.85);
+        break;
+      case 'walking':
+      case 'walking-lite':
+        addNote(0, root, 0.9, baseVel);
+        addNote(1, third, 0.85, baseVel*0.85);
+        addNote(2, fifth, 0.85, baseVel*0.85);
+        if(genre.bassStyle==='walking' || rng()<0.6) addNote(3, root+(rng()<0.5?2:-1), 0.85, baseVel*0.8);
+        break;
+      case 'sparse-sub':
+        addNote(0, root, 2.6, baseVel*1.1);
+        if(rng()<0.3) addNote(2.5, root, 1.0, baseVel*0.7);
+        break;
+      case 'vinyl-groove':
+        addNote(0, root, 0.5, baseVel);
+        if(rng()<0.7) addNote(0.75, root, 0.3, baseVel*0.6);
+        addNote(1.5, fifth, 0.45, baseVel*0.8);
+        if(rng()<0.5) addNote(2.5, root, 0.4, baseVel*0.7);
+        if(rng()<0.4) addNote(3.5, third, 0.4, baseVel*0.65);
+        break;
+      case 'driving-pulse':
+        for(let b=0;b<4;b++){ if(rng()<0.9) addNote(b, b%2===0?root:fifth, 0.45, baseVel*(b===0?1:0.8)); }
+        break;
+      default:
+        addNote(0, root, 1.8, baseVel);
+    }
+  });
+  return events;
+}
+
+// ---------- Idea generation & evolution ----------
+function generateIdea(seed, lockedGenreKey){
+  const rng = mulberry32(seed);
+  const genreKeys = Object.keys(GENRES);
+  const genreKey = lockedGenreKey || pick(rng, genreKeys);
+  const genre = GENRES[genreKey];
+  const emoPool = (rng() < 0.85) ? genre.moods : Object.keys(EMOTIONS);
+  const emotionKey = pick(rng, emoPool);
+  const emotion = EMOTIONS[emotionKey];
+  const scaleKey = pick(rng, genre.scales);
+  const scaleArr = SCALES[scaleKey];
+  const rootMidi = randInt(rng, genre.rootRange[0], genre.rootRange[1]);
+  let tempo = Math.round(randRange(rng, genre.tempoRange[0], genre.tempoRange[1]) + emotion.tempoBias);
+  tempo = Math.max(56, Math.min(128, tempo));
+  const barDur = 60/tempo*4;
+  const chordSize = randInt(rng, genre.chordSizeRange[0], genre.chordSizeRange[1]);
+  const degrees = pick(rng, genre.progressions);
+  const progression = generateProgression(rootMidi, scaleArr, degrees, chordSize);
+  const swing = randRange(rng, genre.swingRange[0], genre.swingRange[1]) * emotion.swingMul;
+  const motif = generateMotif(rng, emotion);
+  const melodyEvents = generateMelodyFromMotif(rng, motif, genre, emotion, scaleArr, rootMidi, progression, barDur, swing);
+  const bassEvents = generateBass(rng, genre, emotion, progression, barDur, swing, rootMidi);
+  return {
+    seed, genreKey, emotionKey, scaleKey, rootMidi, tempo, barDur,
+    loopDur: barDur*progression.length, progression, melodyEvents, bassEvents,
+    motif, swing, chordSize, evolveGen:0,
+  };
+}
+
+// "Evolve" keeps genre + emotion + scale + root + tempo + harmony identical
+// (the bulk of the musical identity) and regenerates melody/bass from a
+// related seed, so ~70-90% of the idea's identity is preserved while new
+// development is introduced — the listener hears the same story continue.
+function evolveIdea(idea){
+  const newSeed = ((idea.seed>>>0) + 0x9E3779B1*((idea.evolveGen||0)+1)) >>> 0;
+  const rng = mulberry32(newSeed);
+  const genre = GENRES[idea.genreKey];
+  const emotion = EMOTIONS[idea.emotionKey];
+  const scaleArr = SCALES[idea.scaleKey];
+  const motif = varyMotif(rng, idea.motif, emotion);
+  const melodyEvents = generateMelodyFromMotif(rng, motif, genre, emotion, scaleArr, idea.rootMidi, idea.progression, idea.barDur, idea.swing);
+  const bassEvents = generateBass(rng, genre, emotion, idea.progression, idea.barDur, idea.swing, idea.rootMidi);
+  return Object.assign({}, idea, {
+    seed:newSeed, motif, melodyEvents, bassEvents,
+    evolveGen:(idea.evolveGen||0)+1, evolvedFrom: idea.seed,
+  });
+}
+
+// ---------- Synth "voices" (timbre layer — genre-distinct instrument character) ----------
+const PAD_VOICES = {
+  'sine-tri-mix': { oscs:[{type:'sine',detune:-0.05},{type:'triangle',detune:0},{type:'sine',detune:0.06}], attack:0.12, release:0.7 },
+  'rhodes':       { oscs:[{type:'sine',detune:0},{type:'triangle',detune:0.02},{type:'sine',detune:-0.03,octave:1}], attack:0.05, release:0.9 },
+  'bell-pad':     { oscs:[{type:'sine',detune:0},{type:'sine',detune:0.01,octave:1},{type:'triangle',detune:-0.02,octave:2}], attack:0.02, release:1.4 },
+  'warm-keys':    { oscs:[{type:'triangle',detune:0},{type:'sine',detune:0.03}], attack:0.03, release:0.6 },
+  'supersaw':     { oscs:[{type:'sawtooth',detune:-0.09},{type:'sawtooth',detune:-0.03},{type:'sawtooth',detune:0},{type:'sawtooth',detune:0.03},{type:'sawtooth',detune:0.09}], attack:0.08, release:0.5 },
+  'jazz-keys':    { oscs:[{type:'triangle',detune:-0.04},{type:'sine',detune:0},{type:'triangle',detune:0.05,octave:1}], attack:0.04, release:0.8 },
+};
+const LEAD_VOICES = {
+  'sine':          { type:'sine' },
+  'rhodes-lead':   { type:'triangle' },
+  'bell':          { type:'sine', harmonic:3 },
+  'jazzy-piano':   { type:'triangle' },
+  'bright-lead':   { type:'sawtooth' },
+  'sax-ish':       { type:'sawtooth' },
+};
+const BASS_VOICES = {
+  'sine-sub':        { main:'sine',     sub:true },
+  'triangle-sub':    { main:'triangle', sub:true },
+  'sine-sub-deep':   { main:'sine',     sub:true, subOct:-24 },
+  'triangle-punchy': { main:'triangle', sub:false },
+  'triangle-tight':  { main:'triangle', sub:false },
+  'upright-ish':     { main:'triangle', sub:true, soft:true },
+};
+
+function effectiveTimbre(genre, emotion){
+  return {
+    padType: genre.timbre.padType, leadType: genre.timbre.leadType, bassType: genre.timbre.bassType,
+    padCutoff: genre.timbre.padCutoff*emotion.filterMul,
+    leadCutoff: genre.timbre.leadCutoff*emotion.filterMul,
+    leadVibrato: genre.timbre.leadVibrato,
+    bassCutoff: genre.timbre.bassCutoff*Math.min(1.15, emotion.filterMul),
+  };
+}
+
+function synthPad(ctx, dest, freq, time, dur, vel, timbre){
+  const voice = PAD_VOICES[timbre.padType] || PAD_VOICES['sine-tri-mix'];
+  const g = ctx.createGain();
+  const filt = ctx.createBiquadFilter();
+  filt.type='lowpass'; filt.frequency.value = timbre.padCutoff||1300; filt.Q.value = 0.6;
+  g.gain.setValueAtTime(0.0001, time);
+  g.gain.exponentialRampToValueAtTime(Math.max(0.02, vel*0.22), time+(voice.attack||0.08));
+  g.gain.exponentialRampToValueAtTime(0.0001, time+dur+(voice.release||0.6));
+  const stopT = time+dur+(voice.release||0.6)+0.1;
+  voice.oscs.forEach(o=>{
+    const osc = ctx.createOscillator();
+    osc.type = o.type;
+    osc.frequency.value = freq * Math.pow(2,(o.detune||0)/12) * Math.pow(2,(o.octave||0));
+    osc.connect(filt);
+    osc.start(time); osc.stop(stopT);
+  });
+  filt.connect(g); g.connect(dest);
+}
+
+function synthLead(ctx, dest, freq, time, dur, vel, timbre){
+  const voice = LEAD_VOICES[timbre.leadType] || LEAD_VOICES['sine'];
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  const filt = ctx.createBiquadFilter();
+  filt.type='lowpass'; filt.frequency.value = timbre.leadCutoff||2400;
+  o.type = voice.type; o.frequency.value = freq;
+  let harmOsc = null;
+  if(voice.harmonic){
+    harmOsc = ctx.createOscillator(); harmOsc.type='sine';
+    harmOsc.frequency.value = freq*voice.harmonic;
+    const harmGain = ctx.createGain(); harmGain.gain.value = 0.18;
+    harmOsc.connect(harmGain); harmGain.connect(filt);
+  }
+  let lfo=null, lfoGain=null;
+  if(timbre.leadVibrato > 0){
+    lfo = ctx.createOscillator(); lfo.frequency.value = timbre.leadVibrato;
+    lfoGain = ctx.createGain(); lfoGain.gain.value = freq*0.004;
+    lfo.connect(lfoGain); lfoGain.connect(o.frequency);
+  }
+  g.gain.setValueAtTime(0.0001, time);
+  g.gain.exponentialRampToValueAtTime(Math.max(0.02, vel*0.2), time+0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, time+dur+0.18);
+  o.connect(filt); filt.connect(g); g.connect(dest);
+  const stopT = time+dur+0.22;
+  o.start(time); o.stop(stopT);
+  if(lfo){ lfo.start(time); lfo.stop(stopT); }
+  if(harmOsc){ harmOsc.start(time); harmOsc.stop(stopT); }
+}
+
+function synthBass(ctx, dest, freq, time, dur, vel, timbre){
+  const voice = BASS_VOICES[timbre.bassType] || BASS_VOICES['sine-sub'];
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  const filt = ctx.createBiquadFilter();
+  filt.type='lowpass'; filt.frequency.value = timbre.bassCutoff||700; filt.Q.value = voice.soft ? 0.3 : 0.7;
+  o.type = voice.main; o.frequency.value = freq;
+  o.connect(filt);
+  let sub = null;
+  if(voice.sub){
+    sub = ctx.createOscillator(); sub.type='sine';
+    sub.frequency.value = freq*Math.pow(2, (voice.subOct||-12)/12);
+    sub.connect(filt);
+  }
+  g.gain.setValueAtTime(0.0001, time);
+  g.gain.exponentialRampToValueAtTime(Math.max(0.03, vel*0.45), time+0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, time+dur+0.12);
+  filt.connect(g); g.connect(dest);
+  const stopT = time+dur+0.16;
+  o.start(time); o.stop(stopT);
+  if(sub){ sub.start(time); sub.stop(stopT); }
+}
+
+// ---------- App state ----------
+let audioCtx = null, masterGain, analyser;
+let lockedGenreKey = null;
+let idea = null;
+let isPlaying = false;
+let schedulerTimer = null, nextLoopBoundary = 0;
+let discoveryCount = 1;
+let history = [];
+let historyIdx = -1;
+
+function ensureAudio(){
+  if(audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  masterGain = audioCtx.createGain(); masterGain.gain.value = 0.9;
+  analyser = audioCtx.createAnalyser(); analyser.fftSize = 512;
+  masterGain.connect(analyser); analyser.connect(audioCtx.destination);
+}
+
+function pushHistory(newIdea){
+  history = history.slice(0, historyIdx+1);
+  history.push(newIdea);
+  historyIdx = history.length-1;
+  discoveryCount++;
+}
+
+function applyIdea(newIdea){
+  idea = newIdea;
+  renderGenreChips();
+  updateEmotionBadge();
+  updateOdometer();
+  const seedInput = document.getElementById('seedInput');
+  if(seedInput) seedInput.value = idea.seed;
+}
+
+function restoreIdeaAt(idx){
+  historyIdx = idx;
+  idea = history[idx];
+  renderGenreChips();
+  updateEmotionBadge();
+  updateOdometer();
+  document.getElementById('seedInput').value = idea.seed;
+}
+
+function buildNewIdea(){
+  const seed = randomSeed();
+  const newIdea = generateIdea(seed, lockedGenreKey);
+  pushHistory(newIdea);
+  applyIdea(newIdea);
+}
+
+function evolveClicked(){
+  if(!idea){ buildNewIdea(); return; }
+  const newIdea = evolveIdea(idea);
+  pushHistory(newIdea);
+  applyIdea(newIdea);
+}
+
+function nextIdea(){
+  if(historyIdx < history.length-1){ restoreIdeaAt(historyIdx+1); }
+  else { buildNewIdea(); }
+}
+function prevIdea(){
+  if(historyIdx > 0) restoreIdeaAt(historyIdx-1);
+}
+
+function loadSeedFromInput(){
+  const raw = document.getElementById('seedInput').value.trim();
+  const n = parseInt(raw, 10);
+  if(!Number.isFinite(n) || n < 0) return;
+  const seed = (n >>> 0);
+  ensureAudio();
+  const newIdea = generateIdea(seed, lockedGenreKey);
+  pushHistory(newIdea);
+  applyIdea(newIdea);
+  if(!isPlaying) startPlayback();
+}
+
+// ---------- Scheduling ----------
+function scheduleLoopAt(startTime){
+  const genre = GENRES[idea.genreKey];
+  const emotion = EMOTIONS[idea.emotionKey];
+  const timbre = effectiveTimbre(genre, emotion);
+  idea.progression.forEach((chord,i)=>{
+    const t = startTime + i*idea.barDur;
+    chord.notes.map(n=>midiToFreq(n+genre.octaves.chord)).forEach(f=>synthPad(audioCtx, masterGain, f, t, idea.barDur*0.95, 0.6, timbre));
+  });
+  idea.melodyEvents.forEach(ev => synthLead(audioCtx, masterGain, ev.freq, startTime+ev.time, ev.dur, ev.vel, timbre));
+  idea.bassEvents.forEach(ev => synthBass(audioCtx, masterGain, ev.freq, startTime+ev.time, ev.dur, ev.vel, timbre));
+}
+function schedulerTick(){
+  if(!isPlaying) return;
+  const now = audioCtx.currentTime;
+  if(nextLoopBoundary - now < 0.2){
+    scheduleLoopAt(nextLoopBoundary);
+    nextLoopBoundary += idea.loopDur;
+  }
+}
+function startPlayback(){
+  ensureAudio();
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  if(!idea) buildNewIdea();
+  isPlaying = true;
+  nextLoopBoundary = audioCtx.currentTime + 0.05;
+  schedulerTimer = setInterval(schedulerTick, 50);
+  document.getElementById('btnPlay').textContent = 'Stop';
+}
+function stopPlayback(){
+  isPlaying = false;
+  clearInterval(schedulerTimer);
+  document.getElementById('btnPlay').textContent = 'Play';
+}
+
+// ---------- The Globe: full-screen, audio-reactive, tap-to-discover, per-world visual identity ----------
+let globeStarted = false;
+let rotY = 0.4, rotX = 0.35;
+let autoSpin = 0.0022;
+let dragging = false, lastPX=0, dragVX=0;
+let nodePoints = [];
+let flashT = 0;
+let timeData = null;
+
+function fibonacciSphere(n){
+  const pts=[];
+  const offset = 2/n;
+  const increment = Math.PI*(3-Math.sqrt(5));
+  for(let i=0;i<n;i++){
+    const y = ((i*offset)-1)+(offset/2);
+    const r = Math.sqrt(Math.max(0,1-y*y));
+    const phi = i*increment;
+    pts.push({ x:Math.cos(phi)*r, y:y, z:Math.sin(phi)*r });
+  }
+  return pts;
+}
+
+function rotatePoint(p, rx, ry){
+  let y = p.y*Math.cos(rx) - p.z*Math.sin(rx);
+  let z = p.y*Math.sin(rx) + p.z*Math.cos(rx);
+  let x = p.x;
+  const x2 = x*Math.cos(ry) + z*Math.sin(ry);
+  const z2 = -x*Math.sin(ry) + z*Math.cos(ry);
+  return { x:x2, y:y, z:z2 };
+}
+
+function audioEnergy(){
+  if(!analyser) return 0;
+  if(!timeData) timeData = new Uint8Array(analyser.fftSize);
+  analyser.getByteTimeDomainData(timeData);
+  let sum=0;
+  for(let i=0;i<timeData.length;i++){ const v=(timeData[i]-128)/128; sum += v*v; }
+  return Math.sqrt(sum/timeData.length);
+}
+
+function startGlobe(){
+  if(globeStarted) return;
+  globeStarted = true;
+  nodePoints = fibonacciSphere(260);
+
+  const canvas = document.getElementById('globeStage');
+  const ctx2d = canvas.getContext('2d');
+  function resize(){ canvas.width = window.innerWidth*devicePixelRatio; canvas.height = window.innerHeight*devicePixelRatio; }
+  resize(); window.addEventListener('resize', resize);
+
+  function frame(){
+    requestAnimationFrame(frame);
+    const w = canvas.width, h = canvas.height;
+    const cx = w/2, cy = h/2;
+    const R = Math.min(w,h)*0.4;
+    const visual = GENRES[idea ? idea.genreKey : 'oasis-fallback'] ? GENRES[idea.genreKey].visual : { accent:'#D4AF37', accent2:'#8a8580', glow:0.5, pulseSpeed:1, bg:'#000' };
+    const accent = visual.accent, accent2 = visual.accent2;
+
+    ctx2d.fillStyle = visual.bg || '#000';
+    ctx2d.fillRect(0,0,w,h);
+
+    const grad = ctx2d.createRadialGradient(cx,cy,R*0.1,cx,cy,R*1.6);
+    grad.addColorStop(0, accent+'2e');
+    grad.addColorStop(0.6, accent2+'14');
+    grad.addColorStop(1, '#00000000');
+    ctx2d.fillStyle = grad;
+    ctx2d.fillRect(0,0,w,h);
+
+    const energy = (audioCtx && isPlaying) ? audioEnergy() : 0.04;
+
+    const spinRate = autoSpin * (visual.pulseSpeed||1);
+    if(!dragging){ rotY += spinRate + dragVX*0.02; dragVX *= 0.92; }
+    else { rotY += dragVX; }
+
+    ctx2d.lineWidth = Math.max(1, devicePixelRatio*0.7);
+    ctx2d.strokeStyle = accent + '30';
+    for(let lat=-60; lat<=60; lat+=30){
+      ctx2d.beginPath();
+      for(let lon=0; lon<=360; lon+=6){
+        const rad = lat*Math.PI/180, lonr = lon*Math.PI/180;
+        const p = { x:Math.cos(rad)*Math.cos(lonr), y:Math.sin(rad), z:Math.cos(rad)*Math.sin(lonr) };
+        const rp = rotatePoint(p, rotX, rotY);
+        const px = cx + rp.x*R, py = cy + rp.y*R*0.95;
+        if(lon===0) ctx2d.moveTo(px,py); else ctx2d.lineTo(px,py);
+      }
+      ctx2d.stroke();
+    }
+    for(let lon=0; lon<360; lon+=30){
+      ctx2d.beginPath();
+      for(let lat=-90; lat<=90; lat+=6){
+        const rad = lat*Math.PI/180, lonr = lon*Math.PI/180;
+        const p = { x:Math.cos(rad)*Math.cos(lonr), y:Math.sin(rad), z:Math.cos(rad)*Math.sin(lonr) };
+        const rp = rotatePoint(p, rotX, rotY);
+        const px = cx + rp.x*R, py = cy + rp.y*R*0.95;
+        if(lat===-90) ctx2d.moveTo(px,py); else ctx2d.lineTo(px,py);
+      }
+      ctx2d.stroke();
+    }
+
+    const projected = nodePoints.map((p,i)=>{
+      const rp = rotatePoint(p, rotX, rotY);
+      const depth = (rp.z+1.3)/2.3;
+      return { x: cx + rp.x*R, y: cy + rp.y*R*0.95, depth, alt: i%3===0 };
+    }).sort((a,b)=>a.depth-b.depth);
+
+    const glowMul = 0.6 + (visual.glow||0.5);
+    projected.forEach(n=>{
+      const pulse = 1 + energy*1.8*glowMul*n.depth;
+      const size = (0.8 + n.depth*2.4) * pulse * devicePixelRatio;
+      const alpha = (0.15 + n.depth*0.85) * (0.6+energy*0.4);
+      ctx2d.beginPath();
+      ctx2d.arc(n.x, n.y, Math.max(0.4,size), 0, Math.PI*2);
+      ctx2d.fillStyle = n.alt ? accent2 : accent;
+      ctx2d.globalAlpha = Math.min(1,alpha);
+      ctx2d.fill();
+    });
+    ctx2d.globalAlpha = 1;
+
+    if(flashT > 0){
+      ctx2d.fillStyle = accent + '38';
+      ctx2d.globalAlpha = flashT*0.6;
+      ctx2d.fillRect(0,0,w,h);
+      ctx2d.globalAlpha = 1;
+      flashT -= 0.04;
+    }
+  }
+  requestAnimationFrame(frame);
+
+  let downX=0, downY=0, moved=false;
+  canvas.addEventListener('pointerdown', e=>{ dragging=true; moved=false; lastPX=e.clientX; downX=e.clientX; downY=e.clientY; });
+  canvas.addEventListener('pointermove', e=>{
+    if(!dragging) return;
+    const dx = e.clientX - lastPX;
+    if(Math.abs(e.clientX-downX)>4 || Math.abs(e.clientY-downY)>4) moved=true;
+    dragVX = dx*0.003; lastPX = e.clientX;
+  });
+  window.addEventListener('pointerup', ()=>{
+    if(!dragging) return;
+    dragging = false;
+    if(!moved){
+      ensureAudio(); nextIdea(); flashT = 1;
+      if(!isPlaying) startPlayback();
+    }
+  });
+}
+
+// ---------- Export: WAV ----------
+function encodeWav(audioBuffer){
+  const numCh = audioBuffer.numberOfChannels;
+  const len = audioBuffer.length * numCh * 2 + 44;
+  const buf = new ArrayBuffer(len);
+  const view = new DataView(buf);
+  function writeStr(off, s){ for(let i=0;i<s.length;i++) view.setUint8(off+i, s.charCodeAt(i)); }
+  writeStr(0,'RIFF'); view.setUint32(4, len-8, true); writeStr(8,'WAVE');
+  writeStr(12,'fmt '); view.setUint32(16,16,true); view.setUint16(20,1,true);
+  view.setUint16(22,numCh,true); view.setUint32(24,audioBuffer.sampleRate,true);
+  view.setUint32(28,audioBuffer.sampleRate*numCh*2,true); view.setUint16(32,numCh*2,true); view.setUint16(34,16,true);
+  writeStr(36,'data'); view.setUint32(40, audioBuffer.length*numCh*2, true);
+  let offset=44;
+  const chans=[]; for(let c=0;c<numCh;c++) chans.push(audioBuffer.getChannelData(c));
+  for(let i=0;i<audioBuffer.length;i++){
+    for(let c=0;c<numCh;c++){
+      let s = Math.max(-1, Math.min(1, chans[c][i]));
+      view.setInt16(offset, s<0? s*0x8000 : s*0x7FFF, true);
+      offset+=2;
+    }
+  }
+  return new Blob([view], { type:'audio/wav' });
+}
+
+async function renderMixOffline(parts){
+  const OfflineCtx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  const sr = 44100;
+  const dur = idea.loopDur + 1.0;
+  const off = new OfflineCtx(2, Math.ceil(dur*sr), sr);
+  const gain = off.createGain(); gain.gain.value = 0.9; gain.connect(off.destination);
+  const genre = GENRES[idea.genreKey];
+  const emotion = EMOTIONS[idea.emotionKey];
+  const timbre = effectiveTimbre(genre, emotion);
+  if(parts.includes('chords')){
+    idea.progression.forEach((chord,i)=>{
+      const t = i*idea.barDur;
+      chord.notes.map(n=>midiToFreq(n+genre.octaves.chord)).forEach(f=>synthPad(off, gain, f, t, idea.barDur*0.95, 0.6, timbre));
+    });
+  }
+  if(parts.includes('melody')) idea.melodyEvents.forEach(ev=>synthLead(off, gain, ev.freq, ev.time, ev.dur, ev.vel, timbre));
+  if(parts.includes('bass')) idea.bassEvents.forEach(ev=>synthBass(off, gain, ev.freq, ev.time, ev.dur, ev.vel, timbre));
+  return off.startRendering();
+}
+
+function fileTag(){ return `${idea.genreKey}-${idea.emotionKey}-seed${idea.seed}-${idea.tempo}bpm`; }
+
+async function exportWav(){
+  if(!idea) buildNewIdea();
+  const rendered = await renderMixOffline(['chords','melody','bass']);
+  downloadBlob(encodeWav(rendered), `frequency-oasis-${fileTag()}.wav`);
+}
+async function exportStems(){
+  if(!idea) buildNewIdea();
+  downloadBlob(encodeWav(await renderMixOffline(['chords'])), `frequency-oasis-${fileTag()}-chords.wav`);
+  downloadBlob(encodeWav(await renderMixOffline(['melody'])), `frequency-oasis-${fileTag()}-melody.wav`);
+  downloadBlob(encodeWav(await renderMixOffline(['bass'])), `frequency-oasis-${fileTag()}-bass.wav`);
+}
+
+// ---------- Export: MIDI ----------
+function writeVarLen(value){
+  let buffer = value & 0x7F;
+  const bytes = [];
+  while ((value >>= 7)) buffer = (buffer<<8) | ((value&0x7F)|0x80);
+  while(true){ bytes.push(buffer & 0xFF); if(buffer & 0x80) buffer >>=8; else break; }
+  return bytes;
+}
+function freqToMidi(f){ return Math.round(69 + 12*Math.log2(f/440)); }
+
+function buildMidiTrack(events, ppq, bpm){
+  const secToTick = (s)=> Math.round(s * (ppq * (bpm/60)));
+  const noteEvents = [];
+  events.forEach(ev=>{
+    const midi = Math.max(0, Math.min(127, freqToMidi(ev.freq)));
+    const vel = Math.max(1, Math.min(127, Math.round(ev.vel*127)));
+    noteEvents.push({ tick:secToTick(ev.time), type:'on', note:midi, vel });
+    noteEvents.push({ tick:secToTick(ev.time+ev.dur), type:'off', note:midi, vel:0 });
+  });
+  noteEvents.sort((a,b)=> a.tick - b.tick);
+  const bytes = [];
+  let lastTick = 0;
+  noteEvents.forEach(ne=>{
+    const delta = Math.max(0, ne.tick - lastTick);
+    bytes.push(...writeVarLen(delta));
+    bytes.push(ne.type==='on' ? 0x90 : 0x80, ne.note, ne.vel);
+    lastTick = ne.tick;
+  });
+  bytes.push(...writeVarLen(0), 0xFF, 0x2F, 0x00);
+  const header = [0x4D,0x54,0x72,0x6B, ...int32(bytes.length)];
+  return [...header, ...bytes];
+}
+function int32(n){ return [(n>>24)&0xFF,(n>>16)&0xFF,(n>>8)&0xFF,n&0xFF]; }
+function int16(n){ return [(n>>8)&0xFF, n&0xFF]; }
+
+function exportMidi(){
+  if(!idea) buildNewIdea();
+  const genre = GENRES[idea.genreKey];
+  const ppq = 480;
+  const chordEvents = [];
+  idea.progression.forEach((chord,i)=>{
+    const t = i*idea.barDur;
+    chord.notes.forEach(n=>{
+      chordEvents.push({ time:t, dur:idea.barDur*0.95, freq:midiToFreq(n+genre.octaves.chord), vel:0.6 });
+    });
+  });
+  const track1 = buildMidiTrack(chordEvents, ppq, idea.tempo);
+  const track2 = buildMidiTrack(idea.melodyEvents, ppq, idea.tempo);
+  const track3 = buildMidiTrack(idea.bassEvents, ppq, idea.tempo);
+  const headerChunk = [0x4D,0x54,0x68,0x64, ...int32(6), ...int16(1), ...int16(3), ...int16(ppq)];
+  const all = new Uint8Array([...headerChunk, ...track1, ...track2, ...track3]);
+  downloadBlob(new Blob([all], { type:'audio/midi' }), `frequency-oasis-${fileTag()}.mid`);
+}
+
+function exportSeed(){
+  if(!idea) buildNewIdea();
+  const payload = {
+    seed: idea.seed, genre: idea.genreKey, emotion: idea.emotionKey, scale: idea.scaleKey,
+    rootMidi: idea.rootMidi, tempo: idea.tempo, chordSize: idea.chordSize,
+    swing: Number(idea.swing.toFixed(3)), evolveGen: idea.evolveGen||0,
+    evolvedFrom: idea.evolvedFrom || null,
+  };
+  const blob = new Blob([JSON.stringify(payload,null,2)], { type:'application/json' });
+  downloadBlob(blob, `frequency-oasis-seed-${idea.seed}.json`);
+}
+
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+}
+
+// ---------- UI wiring ----------
+function updateEmotionBadge(){
+  const genre = GENRES[idea.genreKey];
+  const emotion = EMOTIONS[idea.emotionKey];
+  document.getElementById('emotionWord').textContent = emotion.label;
+  document.getElementById('emotionSub').textContent = `${genre.label} · ${idea.tempo} bpm · ${idea.scaleKey}`;
+}
+function updateOdometer(){
+  document.getElementById('odometer').innerHTML =
+    `Discovery <b>${discoveryCount.toLocaleString()}</b> · Seed <b>${idea.seed}</b> of <b>4,294,967,296</b> possible worlds`;
+}
+function renderGenreChips(){
+  const wrap = document.getElementById('genreSelect');
+  wrap.innerHTML = '';
+  const allChip = document.createElement('button');
+  allChip.className = 'chip' + (!lockedGenreKey ? ' active' : '');
+  allChip.textContent = 'All Worlds';
+  allChip.onclick = ()=>{ lockedGenreKey = null; ensureAudio(); buildNewIdea(); if(!isPlaying) startPlayback(); };
+  wrap.appendChild(allChip);
+  Object.keys(GENRES).forEach(key=>{
+    const g = GENRES[key];
+    const chip = document.createElement('button');
+    chip.className = 'chip' + (lockedGenreKey===key ? ' active' : '');
+    chip.innerHTML = `<span class="dot" style="background:${g.visual.accent}"></span>${g.label}`;
+    chip.onclick = ()=>{ lockedGenreKey = key; ensureAudio(); buildNewIdea(); if(!isPlaying) startPlayback(); };
+    wrap.appendChild(chip);
+  });
+}
+
+document.getElementById('btnPlay').onclick = ()=>{ if(isPlaying) stopPlayback(); else startPlayback(); };
+document.getElementById('btnNext').onclick = ()=>{ ensureAudio(); nextIdea(); if(!isPlaying) startPlayback(); };
+document.getElementById('btnPrev').onclick = ()=>{ ensureAudio(); prevIdea(); };
+document.getElementById('btnEvolve').onclick = ()=>{ ensureAudio(); evolveClicked(); if(!isPlaying) startPlayback(); };
+document.getElementById('btnLoadSeed').onclick = ()=> loadSeedFromInput();
+document.getElementById('seedInput').addEventListener('keydown', e=>{ if(e.key==='Enter') loadSeedFromInput(); });
+document.getElementById('btnExportToggle').onclick = ()=>{ document.getElementById('exportPanel').classList.toggle('open'); };
+document.getElementById('btnExportWav').onclick = ()=>{ ensureAudio(); exportWav(); };
+document.getElementById('btnExportStems').onclick = ()=>{ ensureAudio(); exportStems(); };
+document.getElementById('btnExportMidi').onclick = ()=>{ ensureAudio(); exportMidi(); };
+document.getElementById('btnExportSeed').onclick = ()=>{ ensureAudio(); exportSeed(); };
+
+// ---------- Init ----------
+idea = generateIdea(randomSeed(), null);
+history = [idea]; historyIdx = 0; discoveryCount = 1;
+renderGenreChips();
+updateEmotionBadge();
+updateOdometer();
+document.getElementById('seedInput').value = idea.seed;
+startGlobe(); // globe renders immediately (idle ambient state); audio starts on first interaction
+</script>
+</body>
+</html>
