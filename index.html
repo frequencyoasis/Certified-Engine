@@ -22,6 +22,7 @@
 <link rel="manifest" href="site.webmanifest">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#050505">
+<meta name="color-scheme" content="dark">
 
 <!-- Social preview -->
 <meta property="og:title" content="Frequency Oasis — Certified Sound Engine">
@@ -43,7 +44,9 @@
     --panel-line:#231c26;
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#000;}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#000;overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;}
+  input{-webkit-user-select:text;user-select:text;}
+  button,.chip{touch-action:manipulation;}
   body{
     color:var(--ink);
     font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
@@ -165,14 +168,65 @@
   }
   .toast.show{opacity:1;}
 
-  @media (max-width:560px){
-    .profile-select{flex-direction:row;flex-wrap:wrap;justify-content:flex-end;top:auto;bottom:150px;right:10px;left:10px;transform:none;}
-    .cta-corner{left:50%;transform:translateX(-50%);bottom:196px;}
-    .seed-row{left:50%;transform:translateX(-50%);bottom:222px;align-items:center;}
-    .export-menu{right:20px;bottom:150px;}
-    .emotion-badge{top:52px;}
-    .emotion-badge .word{font-size:21px;}
-    .toast{top:100px;}
+  /* ───────── PHONE (portrait): stacked zones instead of corner-pinned overlays ─────────
+     top:    brand + seal  →  odometer  →  emotion word
+     bottom: transport  →  genre chips (swipe sideways)  →  hint  →  seed + export  →  VST link   */
+  @media (max-width:700px){
+    .overlay-top{padding:calc(10px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) 0 calc(14px + env(safe-area-inset-left));align-items:center;}
+    .brand .mark{font-size:16px;white-space:nowrap;}
+    .brand .tagline{font-size:8.5px;letter-spacing:.12em;}
+    .seal{font-size:8.5px;padding:4px 9px;letter-spacing:.06em;}
+    .odometer{top:calc(60px + env(safe-area-inset-top));width:max-content;max-width:calc(100vw - 24px);white-space:normal;text-align:center;font-size:9.5px;line-height:1.4;padding:5px 12px;border-radius:14px;}
+    .emotion-badge{top:calc(112px + env(safe-area-inset-top));width:calc(100vw - 24px);}
+    .emotion-badge .word{font-size:22px;}
+    .emotion-badge .sub{font-size:10px;letter-spacing:.06em;margin-top:3px;}
+    .toast{top:calc(196px + env(safe-area-inset-top));}
+
+    .transport-bar{bottom:calc(12px + env(safe-area-inset-bottom));gap:8px;width:calc(100vw - 24px);justify-content:center;}
+    button.btn{min-height:44px;padding:11px 14px;font-size:13px;}
+    button.btn.round{padding:11px 13px;}
+    .profile-select{flex-direction:row;flex-wrap:nowrap;align-items:center;justify-content:flex-start;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+      top:auto;bottom:calc(68px + env(safe-area-inset-bottom));left:0;right:0;padding:2px 12px;}
+    .profile-select::-webkit-scrollbar{display:none;}
+    .chip{flex:0 0 auto;white-space:nowrap;min-height:34px;font-size:12px;}
+    .hint{bottom:calc(108px + env(safe-area-inset-bottom));font-size:10px;white-space:normal;text-align:center;max-width:calc(100vw - 24px);width:max-content;}
+    .seed-row{left:calc(12px + env(safe-area-inset-left));bottom:calc(152px + env(safe-area-inset-bottom));transform:none;align-items:flex-start;}
+    .seed-input-wrap input{width:min(200px,52vw);font-size:16px;padding:10px 14px;}   /* 16px stops Android zoom-on-focus */
+    .seed-input-wrap button{min-height:44px;}
+    .export-menu{right:calc(12px + env(safe-area-inset-right));bottom:calc(152px + env(safe-area-inset-bottom));}
+    .export-panel button{min-height:40px;}
+    .cta-corner{left:50%;transform:translateX(-50%);bottom:calc(206px + env(safe-area-inset-bottom));white-space:nowrap;}
+  }
+  /* shorter phones: drop the hint so the globe keeps room */
+  @media (max-width:700px) and (max-height:720px){
+    .hint{display:none;}
+    .seed-row,.export-menu{bottom:calc(112px + env(safe-area-inset-bottom));}
+    .cta-corner{bottom:calc(166px + env(safe-area-inset-bottom));}
+  }
+  /* ───────── PHONE (landscape) ───────── */
+  @media (max-height:520px) and (min-width:701px){
+    .overlay-top{padding:calc(8px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) 0 calc(14px + env(safe-area-inset-left));}
+    .brand .tagline{display:none;}
+    .brand .mark{font-size:16px;}
+    .seal{font-size:9px;padding:4px 10px;}
+    .odometer{top:calc(10px + env(safe-area-inset-top));font-size:9.5px;padding:5px 12px;}
+    .emotion-badge{top:calc(46px + env(safe-area-inset-top));}
+    .emotion-badge .word{font-size:20px;}
+    .emotion-badge .sub{font-size:10px;margin-top:2px;}
+    .hint{display:none;}
+    .toast{top:calc(100px + env(safe-area-inset-top));}
+    .profile-select{top:calc(52px + env(safe-area-inset-top));right:calc(12px + env(safe-area-inset-right));gap:4px;}
+    .chip{padding:5px 10px;font-size:11px;}
+    .transport-bar{bottom:calc(10px + env(safe-area-inset-bottom));}
+    button.btn{padding:9px 16px;}
+    .seed-row{left:calc(12px + env(safe-area-inset-left));bottom:calc(10px + env(safe-area-inset-bottom));}
+    .cta-corner{left:calc(12px + env(safe-area-inset-left));bottom:calc(58px + env(safe-area-inset-bottom));}
+    .export-menu{right:calc(12px + env(safe-area-inset-right));bottom:calc(10px + env(safe-area-inset-bottom));}
+  }
+  @media (max-height:520px) and (min-width:701px) and (max-width:860px){ .seal{display:none;} }
+  /* small tablets, portrait: odometer drops below the brand row */
+  @media (min-width:701px) and (max-width:900px) and (min-height:521px){
+    .odometer{top:64px;} .emotion-badge{top:104px;} .toast{top:160px;}
   }
   @media (prefers-reduced-motion: reduce){ * { transition:none !important; } }
 </style>
@@ -1613,6 +1667,8 @@ function renderGenreChips(){
     chip.onclick = ()=>choose(key);
     wrap.appendChild(chip);
   });
+  const act = wrap.querySelector('.chip.active');
+  if(act && wrap.scrollWidth > wrap.clientWidth){ wrap.scrollLeft = act.offsetLeft - (wrap.clientWidth - act.offsetWidth)/2; }
 }
 
 $('btnPlay').onclick = ()=>{ if(isPlaying) stopPlayback(); else startPlayback(); };
@@ -1647,6 +1703,11 @@ idea = generateIdea(randomSeed(), 0);
 history = [idea]; historyIdx = 0;
 refreshUI();
 startGlobe(); // the globe renders immediately; audio starts on the first interaction
+</script>
+<script>
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW failed', err)));
+}
 </script>
 </body>
 </html>
