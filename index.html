@@ -203,6 +203,12 @@
     .seed-row,.export-menu{bottom:calc(112px + env(safe-area-inset-bottom));}
     .cta-corner{bottom:calc(166px + env(safe-area-inset-bottom));}
   }
+  /* very narrow phones (≤340px): keep seed row and Export button from touching */
+  @media (max-width:340px){
+    .seed-input-wrap input{width:36vw;}
+    .seed-input-wrap{gap:4px;}
+    button.btn{padding-left:11px;padding-right:11px;}
+  }
   /* ───────── PHONE (landscape) ───────── */
   @media (max-height:520px) and (min-width:701px){
     .overlay-top{padding:calc(8px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) 0 calc(14px + env(safe-area-inset-left));}
